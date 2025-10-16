@@ -1,0 +1,35 @@
+// config.js - Configuration
+
+// Firebase credentials
+// Admin passcode
+// Category list
+// Location names
+// Exports constants for use in app.js
+
+// Firebase Configuration
+// TODO: Replace with your actual Firebase config from Firebase Console
+
+export const firebaseConfig = {
+  apiKey: "AIzaSyDMRCN-cobIEZpme3LKD6H4lbSfEfIUVOg",
+  authDomain: "home-inventory-2025.firebaseapp.com",
+  databaseURL: "https://home-inventory-2025-default-rtdb.firebaseio.com",
+  projectId: "home-inventory-2025",
+  storageBucket: "home-inventory-2025.firebasestorage.app",
+  messagingSenderId: "716830800231",
+  appId: "1:716830800231:web:4064c4fe606612b35ed7c2"
+};
+
+// Admin passcode
+export const ADMIN_PASSCODE = "12321";
+
+// Available categories for items
+export const CATEGORIES = [
+    "sauce",
+    "cleaning product",
+    "canned food",
+    "noodles",
+    "vinegar"
+];
+
+// Location names
+export const LOCATIONS = ["basement", "garage", "toilet", "elsewhere"];

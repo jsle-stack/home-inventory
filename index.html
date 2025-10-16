@@ -1,0 +1,93 @@
+<!-- index.html - Structure
+
+Defines the page layout
+Contains all HTML elements (buttons, inputs, forms)
+Links to CSS and JavaScript files
+No styling or logic here, just structure -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Inventory Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🏠 Home Inventory Manager</h1>
+        
+        <div class="controls">
+            <input type="text" id="searchBar" placeholder="Search items...">
+            <select id="categoryFilter">
+                <option value="">All Categories</option>
+                <option value="sauce">Sauce</option>
+                <option value="cleaning product">Cleaning Product</option>
+                <option value="canned food">Canned Food</option>
+                <option value="noodles">Noodles</option>
+                <option value="vinegar">Vinegar</option>
+            </select>
+            <button id="adminToggle">Admin Mode</button>
+            <button id="addItemBtn">+ Add Item</button>
+        </div>
+
+        <div id="itemGrid" class="item-grid"></div>
+    </div>
+
+    <!-- Add/Edit Item Modal -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Add New Item</h2>
+            <form id="itemForm">
+                <div class="form-group">
+                    <label>Item Name *</label>
+                    <input type="text" id="itemName" required>
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="itemCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="sauce">Sauce</option>
+                        <option value="cleaning product">Cleaning Product</option>
+                        <option value="canned food">Canned Food</option>
+                        <option value="noodles">Noodles</option>
+                        <option value="vinegar">Vinegar</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Quantities by Location</label>
+                    <div class="locations-grid">
+                        <div>
+                            <label>Basement</label>
+                            <input type="number" id="qtyBasement" value="0" min="0">
+                        </div>
+                        <div>
+                            <label>Garage</label>
+                            <input type="number" id="qtyGarage" value="0" min="0">
+                        </div>
+                        <div>
+                            <label>Toilet</label>
+                            <input type="number" id="qtyToilet" value="0" min="0">
+                        </div>
+                        <div>
+                            <label>Elsewhere</label>
+                            <input type="number" id="qtyElsewhere" value="0" min="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Note</label>
+                    <textarea id="itemNote"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit">Save Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Load JavaScript modules -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
