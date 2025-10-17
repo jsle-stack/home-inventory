@@ -1,15 +1,7 @@
-// app.js - Functionality
-
-// Firebase connection and data operations
-// Admin mode logic
-// Search and filter functionality
-// Add/Edit/Delete items
-// Render items to the page
-// Event handling (clicks, form submissions)
-
 // Import Firebase modules
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getDatabase, ref, onValue, set, push, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
 // Import configuration
 import { firebaseConfig, ADMIN_PASSCODE } from './config.js';
@@ -17,7 +9,14 @@ import { firebaseConfig, ADMIN_PASSCODE } from './config.js';
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+const auth = getAuth(app);
 const itemsRef = ref(database, 'items');
+
+// Sign in anonymously
+signInAnonymously(auth).catch((error) => {
+    console.error("Auth error:", error);
+    alert("Failed to connect. Please refresh the page.");
+});
 
 // Application state
 let items = {};
@@ -36,8 +35,15 @@ const modalTitle = document.getElementById('modalTitle');
 
 // Initialize app
 function init() {
-    loadItems();
     setupEventListeners();
+    
+    // Wait for authentication before loading items
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in, now load items
+            loadItems();
+        }
+    });
 }
 
 // Load items from Firebase
@@ -157,6 +163,20 @@ window.updateQuantity = function(id, location, value) {
     set(ref(database, `items/${id}`), item);
 };
 
+// Adjust quantity by increment (for +/- buttons)
+window.adjustQuantity = function(id, location, change) {
+    if (!isAdminMode) return;
+    
+    const item = items[id];
+    const currentQty = item.locations[location] || 0;
+    const newQty = Math.max(0, currentQty + change); // Don't go below 0
+    
+    item.locations[location] = newQty;
+    item.lastEdited = getCurrentDate();
+    
+    set(ref(database, `items/${id}`), item);
+};
+
 // Render all items
 function renderItems() {
     const searchTerm = searchBar.value.toLowerCase();
@@ -203,18 +223,25 @@ function createItemCard(id, item) {
     `;
 }
 
-// Create location quantity inputs
+// Create location quantity inputs with +/- buttons
 function createLocationInputs(id, locations) {
     return Object.entries(locations).map(([location, qty]) => `
         <div class="location">
-            <span class="location-name">${location}:</span>
-            <input 
-                type="number" 
-                value="${qty}" 
-                min="0" 
-                ${isAdminMode ? '' : 'disabled'}
-                onchange="updateQuantity('${id}', '${location}', this.value)"
-            >
+            <span class="location-name">${location}</span>
+            <div class="quantity-control">
+                <button 
+                    class="quantity-btn" 
+                    onclick="adjustQuantity('${id}', '${location}', -1)"
+                    ${!isAdminMode ? 'disabled' : ''}
+                    ${qty <= 0 ? 'disabled' : ''}
+                >−</button>
+                <span class="quantity-display">${qty}</span>
+                <button 
+                    class="quantity-btn" 
+                    onclick="adjustQuantity('${id}', '${location}', 1)"
+                    ${!isAdminMode ? 'disabled' : ''}
+                >+</button>
+            </div>
         </div>
     `).join('');
 }
