@@ -169,29 +169,74 @@ button:hover {
 /* Locations Grid */
 .locations {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 10px;
     margin: 10px 0;
 }
 
 .location {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
     background: white;
     border-radius: 4px;
+    border: 1px solid #e0e0e0;
 }
 
 .location-name {
     font-weight: 500;
     text-transform: capitalize;
+    font-size: 13px;
+    color: #555;
 }
 
-.location input {
-    width: 60px;
-    padding: 5px;
+/* Quantity Controls */
+.quantity-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.quantity-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #ddd;
+    background: #f8f8f8;
+    border-radius: 4px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    padding: 0;
+    min-width: 36px;
+    flex-shrink: 0;
+}
+
+.quantity-btn:active {
+    background: #e0e0e0;
+}
+
+.quantity-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+body.admin-mode .quantity-btn:not(:disabled):hover {
+    background: #e8f5e9;
+    border-color: #4CAF50;
+}
+
+.quantity-display {
+    flex: 1;
     text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    min-width: 40px;
 }
 
 /* Item Note and Footer */
@@ -231,6 +276,7 @@ button:hover {
     height: 100%;
     background: rgba(0,0,0,0.5);
     z-index: 1000;
+    overflow-y: auto;
 }
 
 .modal-content {
@@ -289,4 +335,38 @@ button:hover {
     text-align: center;
     padding: 40px;
     color: #999;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        padding: 20px;
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+    
+    .locations {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+    
+    .quantity-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 22px;
+    }
+    
+    .locations-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        margin: 20px;
+        max-width: calc(100% - 40px);
+    }
 }
