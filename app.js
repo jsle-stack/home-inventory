@@ -250,7 +250,6 @@ function createLocationInputs(id, locations) {
 function createItemActions(id) {
     return `
         <div class="item-actions">
-            <button onclick="editItem('${id}')">Edit</button>
             <button class="delete-btn" onclick="deleteItem('${id}')">Delete</button>
         </div>
     `;
