@@ -24,11 +24,12 @@ export const ADMIN_PASSCODE = "12321";
 
 // Available categories for items
 export const CATEGORIES = [
-    "sauce",
-    "cleaning product",
-    "canned food",
-    "noodles",
-    "vinegar"
+    "醬 sauce",
+    "清潔產品 cleaning product",
+    "罐頭 canned",
+    "麵/飯 noodles/rice",
+    "醋或水 vinegar/water",
+    "袋 bags"
 ];
 
 // Location names
