@@ -205,12 +205,39 @@ window.adjustQuantity = function (id, location, change) {
 function renderItems() {
   const searchTerm = searchBar.value.toLowerCase();
   const categoryFilterValue = categoryFilter.value;
+  const sortValue = sortFilter.value;
 
-  const filteredItems = Object.entries(items).filter(([id, item]) => {
+  let filteredItems = Object.entries(items).filter(([id, item]) => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm);
     const matchesCategory =
       !categoryFilterValue || item.category === categoryFilterValue;
     return matchesSearch && matchesCategory;
+  });
+
+  // Sort items based on selected option
+  filteredItems.sort(([idA, itemA], [idB, itemB]) => {
+    switch (sortValue) {
+      case "date-desc":
+        // Most recent first
+        return (itemB.lastEdited || "").localeCompare(itemA.lastEdited || "");
+      case "date-asc":
+        // Oldest first
+        return (itemA.lastEdited || "").localeCompare(itemB.lastEdited || "");
+      case "name-asc":
+        return itemA.name.localeCompare(itemB.name);
+      case "name-desc":
+        return itemB.name.localeCompare(itemA.name);
+      case "qty-desc":
+        return (
+          calculateTotal(itemB.locations) - calculateTotal(itemA.locations)
+        );
+      case "qty-asc":
+        return (
+          calculateTotal(itemA.locations) - calculateTotal(itemB.locations)
+        );
+      default:
+        return 0;
+    }
   });
 
   if (filteredItems.length === 0) {

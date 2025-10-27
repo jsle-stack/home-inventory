@@ -1,88 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home Inventory Manager</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <div class="container">
-        <h1>🏠 Home Inventory Manager</h1>
-        
-        <div class="controls">
-            <input type="text" id="searchBar" placeholder="Search items...">
-            <select id="categoryFilter">
-                <option value="">All Categories</option>
-                <option value="醬 sauce">醬 Sauce</option>
-                <option value="清潔產品 cleaning product">清潔產品 Cleaning Product</option>
-                <option value="罐頭 canned">罐頭 Canned</option>
-                <option value="麵/飯 noodles/rice">麵/飯 Noodles/Rice</option>
-                <option value="醋或水 vinegar/water">醋或水 Vinegar/Water</option>
-                <option value="袋 bags">袋 Bags</option>
-            </select>
-            <button id="adminToggle">Admin Mode</button>
-            <button id="addItemBtn">+ Add Item</button>
-        </div>
+      <h1>🏠 Home Inventory Manager</h1>
 
-        <div id="itemGrid" class="item-grid"></div>
+      <div class="controls">
+        <input type="text" id="searchBar" placeholder="Search items..." />
+        <select id="categoryFilter">
+          <option value="">All Categories</option>
+          <option value="醬 sauce">醬 Sauce</option>
+          <option value="清潔產品 cleaning product">
+            清潔產品 Cleaning Product
+          </option>
+          <option value="罐頭 canned">罐頭 Canned</option>
+          <option value="麵/飯 noodles/rice">麵/飯 Noodles/Rice</option>
+          <option value="醋或水 vinegar/water">醋或水 Vinegar/Water</option>
+          <option value="袋 bags">袋 Bags</option>
+        </select>
+        <select id="sortFilter">
+          <option value="date-desc">Latest Edited First</option>
+          <option value="date-asc">Oldest Edited First</option>
+          <option value="name-asc">Name (A-Z)</option>
+          <option value="name-desc">Name (Z-A)</option>
+          <option value="qty-desc">Quantity (High-Low)</option>
+          <option value="qty-asc">Quantity (Low-High)</option>
+        </select>
+        <button id="adminToggle">Admin Mode</button>
+        <button id="addItemBtn">+ Add Item</button>
+      </div>
+
+      <div id="itemGrid" class="item-grid"></div>
     </div>
 
     <!-- Add/Edit Item Modal -->
     <div id="itemModal" class="modal">
-        <div class="modal-content">
-            <h2 id="modalTitle">Add New Item</h2>
-            <form id="itemForm">
-                <div class="form-group">
-                    <label>Item Name *</label>
-                    <input type="text" id="itemName" required>
-                </div>
-                <div class="form-group">
-                    <label>Category *</label>
-                    <select id="itemCategory" required>
-                        <option value="">Select Category</option>
-                        <option value="醬 sauce">醬 Sauce</option>
-                        <option value="清潔產品 cleaning product">清潔產品 Cleaning Product</option>
-                        <option value="罐頭 canned">罐頭 Canned</option>
-                        <option value="麵/飯 noodles/rice">麵/飯 Noodles/Rice</option>
-                        <option value="醋或水 vinegar/water">醋或水 Vinegar/Water</option>
-                        <option value="袋 bags">袋 Bags</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Quantities by Location</label>
-                    <div class="locations-grid">
-                        <div>
-                            <label>Basement</label>
-                            <input type="number" id="qtyBasement" value="0" min="0">
-                        </div>
-                        <div>
-                            <label>Garage</label>
-                            <input type="number" id="qtyGarage" value="0" min="0">
-                        </div>
-                        <div>
-                            <label>Toilet</label>
-                            <input type="number" id="qtyToilet" value="0" min="0">
-                        </div>
-                        <div>
-                            <label>Elsewhere</label>
-                            <input type="number" id="qtyElsewhere" value="0" min="0">
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Note</label>
-                    <textarea id="itemNote"></textarea>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="cancel-btn" onclick="closeModal()">Cancel</button>
-                    <button type="submit">Save Item</button>
-                </div>
-            </form>
-        </div>
+      <div class="modal-content">
+        <h2 id="modalTitle">Add New Item</h2>
+        <form id="itemForm">
+          <div class="form-group">
+            <label>Item Name *</label>
+            <input type="text" id="itemName" required />
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="itemCategory" required>
+              <option value="">Select Category</option>
+              <option value="醬 sauce">醬 Sauce</option>
+              <option value="清潔產品 cleaning product">
+                清潔產品 Cleaning Product
+              </option>
+              <option value="罐頭 canned">罐頭 Canned</option>
+              <option value="麵/飯 noodles/rice">麵/飯 Noodles/Rice</option>
+              <option value="醋或水 vinegar/water">醋或水 Vinegar/Water</option>
+              <option value="袋 bags">袋 Bags</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Quantities by Location</label>
+            <div class="locations-grid">
+              <div>
+                <label>Basement</label>
+                <input type="number" id="qtyBasement" value="0" min="0" />
+              </div>
+              <div>
+                <label>Garage</label>
+                <input type="number" id="qtyGarage" value="0" min="0" />
+              </div>
+              <div>
+                <label>Toilet</label>
+                <input type="number" id="qtyToilet" value="0" min="0" />
+              </div>
+              <div>
+                <label>Elsewhere</label>
+                <input type="number" id="qtyElsewhere" value="0" min="0" />
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Note</label>
+            <textarea id="itemNote"></textarea>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="cancel-btn" onclick="closeModal()">
+              Cancel
+            </button>
+            <button type="submit">Save Item</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <!-- Load JavaScript modules -->
     <script type="module" src="app.js"></script>
-</body>
+  </body>
 </html>
