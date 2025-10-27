@@ -223,10 +223,6 @@ function renderItems() {
       case "date-asc":
         // Oldest first
         return (itemA.lastEdited || "").localeCompare(itemB.lastEdited || "");
-      case "name-asc":
-        return itemA.name.localeCompare(itemB.name);
-      case "name-desc":
-        return itemB.name.localeCompare(itemA.name);
       case "qty-desc":
         return (
           calculateTotal(itemB.locations) - calculateTotal(itemA.locations)
