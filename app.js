@@ -1,21 +1,32 @@
 // Import Firebase modules
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getDatabase, ref, onValue, set, push, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  set,
+  push,
+  remove,
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import {
+  getAuth,
+  signInAnonymously,
+  onAuthStateChanged,
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // Import configuration
-import { firebaseConfig, ADMIN_PASSCODE } from './config.js';
+import { firebaseConfig, ADMIN_PASSCODE } from "./config.js";
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const auth = getAuth(app);
-const itemsRef = ref(database, 'items');
+const itemsRef = ref(database, "items");
 
 // Sign in anonymously
 signInAnonymously(auth).catch((error) => {
-    console.error("Auth error:", error);
-    alert("Failed to connect. Please refresh the page.");
+  console.error("Auth error:", error);
+  alert("Failed to connect. Please refresh the page.");
 });
 
 // Application state
@@ -24,187 +35,203 @@ let isAdminMode = false;
 let editingItemId = null;
 
 // DOM Elements
-const searchBar = document.getElementById('searchBar');
-const categoryFilter = document.getElementById('categoryFilter');
-const adminToggle = document.getElementById('adminToggle');
-const addItemBtn = document.getElementById('addItemBtn');
-const itemGrid = document.getElementById('itemGrid');
-const itemModal = document.getElementById('itemModal');
-const itemForm = document.getElementById('itemForm');
-const modalTitle = document.getElementById('modalTitle');
+const searchBar = document.getElementById("searchBar");
+const categoryFilter = document.getElementById("categoryFilter");
+const sortFilter = document.getElementById("sortFilter");
+const adminToggle = document.getElementById("adminToggle");
+const addItemBtn = document.getElementById("addItemBtn");
+const itemGrid = document.getElementById("itemGrid");
+const itemModal = document.getElementById("itemModal");
+const itemForm = document.getElementById("itemForm");
+const modalTitle = document.getElementById("modalTitle");
 
 // Initialize app
 function init() {
-    setupEventListeners();
-    
-    // Wait for authentication before loading items
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            // User is signed in, now load items
-            loadItems();
-        }
-    });
+  setupEventListeners();
+
+  // Wait for authentication before loading items
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // User is signed in, now load items
+      loadItems();
+    }
+  });
 }
 
 // Load items from Firebase
 function loadItems() {
-    onValue(itemsRef, (snapshot) => {
-        items = snapshot.val() || {};
-        renderItems();
-    });
+  onValue(itemsRef, (snapshot) => {
+    items = snapshot.val() || {};
+    renderItems();
+  });
 }
 
 // Setup all event listeners
 function setupEventListeners() {
-    adminToggle.addEventListener('click', toggleAdminMode);
-    addItemBtn.addEventListener('click', openAddItemModal);
-    searchBar.addEventListener('input', renderItems);
-    categoryFilter.addEventListener('change', renderItems);
-    itemForm.addEventListener('submit', saveItem);
-    itemModal.addEventListener('click', (e) => {
-        if (e.target.id === 'itemModal') closeModal();
-    });
+  adminToggle.addEventListener("click", toggleAdminMode);
+  addItemBtn.addEventListener("click", openAddItemModal);
+  searchBar.addEventListener("input", renderItems);
+  categoryFilter.addEventListener("change", renderItems);
+  sortFilter.addEventListener("change", renderItems);
+  itemForm.addEventListener("submit", saveItem);
+  itemModal.addEventListener("click", (e) => {
+    if (e.target.id === "itemModal") closeModal();
+  });
 }
 
-// Toggle admin mode
+// Toggle admin mode - NO PASSCODE NEEDED TO EXIT
 function toggleAdminMode() {
-    const passcode = prompt('Enter admin passcode:');
-    
-    if (passcode === ADMIN_PASSCODE) {
-        isAdminMode = !isAdminMode;
-        document.body.classList.toggle('admin-mode', isAdminMode);
-        adminToggle.textContent = isAdminMode ? 'Exit Admin' : 'Admin Mode';
-        adminToggle.classList.toggle('active', isAdminMode);
-        renderItems();
-    } else if (passcode !== null) {
-        alert('Incorrect passcode!');
-    }
+  // If already in admin mode, just exit without asking for passcode
+  if (isAdminMode) {
+    isAdminMode = false;
+    document.body.classList.remove("admin-mode");
+    adminToggle.textContent = "Admin Mode";
+    adminToggle.classList.remove("active");
+    renderItems();
+    return;
+  }
+
+  // Entering admin mode - ask for passcode
+  const passcode = prompt("Enter admin passcode:");
+
+  if (passcode === ADMIN_PASSCODE) {
+    isAdminMode = true;
+    document.body.classList.add("admin-mode");
+    adminToggle.textContent = "Exit Admin";
+    adminToggle.classList.add("active");
+    renderItems();
+  } else if (passcode !== null) {
+    alert("Incorrect passcode!");
+  }
 }
 
 // Open modal for adding new item
 function openAddItemModal() {
-    editingItemId = null;
-    modalTitle.textContent = 'Add New Item';
-    itemForm.reset();
-    itemModal.style.display = 'block';
+  editingItemId = null;
+  modalTitle.textContent = "Add New Item";
+  itemForm.reset();
+  itemModal.style.display = "block";
 }
 
 // Open modal for editing existing item
-window.editItem = function(id) {
-    if (!isAdminMode) return;
-    
-    editingItemId = id;
-    const item = items[id];
-    
-    modalTitle.textContent = 'Edit Item';
-    document.getElementById('itemName').value = item.name;
-    document.getElementById('itemCategory').value = item.category;
-    document.getElementById('qtyBasement').value = item.locations.basement;
-    document.getElementById('qtyGarage').value = item.locations.garage;
-    document.getElementById('qtyToilet').value = item.locations.toilet;
-    document.getElementById('qtyElsewhere').value = item.locations.elsewhere;
-    document.getElementById('itemNote').value = item.note || '';
-    
-    itemModal.style.display = 'block';
+window.editItem = function (id) {
+  if (!isAdminMode) return;
+
+  editingItemId = id;
+  const item = items[id];
+
+  modalTitle.textContent = "Edit Item";
+  document.getElementById("itemName").value = item.name;
+  document.getElementById("itemCategory").value = item.category;
+  document.getElementById("qtyBasement").value = item.locations.basement;
+  document.getElementById("qtyGarage").value = item.locations.garage;
+  document.getElementById("qtyToilet").value = item.locations.toilet;
+  document.getElementById("qtyElsewhere").value = item.locations.elsewhere;
+  document.getElementById("itemNote").value = item.note || "";
+
+  itemModal.style.display = "block";
 };
 
 // Close modal
-window.closeModal = function() {
-    itemModal.style.display = 'none';
-    itemForm.reset();
-    editingItemId = null;
+window.closeModal = function () {
+  itemModal.style.display = "none";
+  itemForm.reset();
+  editingItemId = null;
 };
 
 // Save item (add or update)
 function saveItem(e) {
-    e.preventDefault();
-    
-    const itemData = {
-        name: document.getElementById('itemName').value,
-        category: document.getElementById('itemCategory').value,
-        locations: {
-            basement: parseInt(document.getElementById('qtyBasement').value) || 0,
-            garage: parseInt(document.getElementById('qtyGarage').value) || 0,
-            toilet: parseInt(document.getElementById('qtyToilet').value) || 0,
-            elsewhere: parseInt(document.getElementById('qtyElsewhere').value) || 0
-        },
-        note: document.getElementById('itemNote').value,
-        lastEdited: getCurrentDate()
-    };
+  e.preventDefault();
 
-    if (editingItemId) {
-        // Update existing item
-        set(ref(database, `items/${editingItemId}`), itemData);
-    } else {
-        // Add new item
-        push(itemsRef, itemData);
-    }
+  const itemData = {
+    name: document.getElementById("itemName").value,
+    category: document.getElementById("itemCategory").value,
+    locations: {
+      basement: parseInt(document.getElementById("qtyBasement").value) || 0,
+      garage: parseInt(document.getElementById("qtyGarage").value) || 0,
+      toilet: parseInt(document.getElementById("qtyToilet").value) || 0,
+      elsewhere: parseInt(document.getElementById("qtyElsewhere").value) || 0,
+    },
+    note: document.getElementById("itemNote").value,
+    lastEdited: getCurrentDate(),
+  };
 
-    closeModal();
+  if (editingItemId) {
+    // Update existing item
+    set(ref(database, `items/${editingItemId}`), itemData);
+  } else {
+    // Add new item
+    push(itemsRef, itemData);
+  }
+
+  closeModal();
 }
 
 // Delete item
-window.deleteItem = function(id) {
-    if (!isAdminMode) return;
-    
-    if (confirm('Are you sure you want to delete this item?')) {
-        remove(ref(database, `items/${id}`));
-    }
+window.deleteItem = function (id) {
+  if (!isAdminMode) return;
+
+  if (confirm("Are you sure you want to delete this item?")) {
+    remove(ref(database, `items/${id}`));
+  }
 };
 
 // Update quantity for a specific location
-window.updateQuantity = function(id, location, value) {
-    if (!isAdminMode) return;
-    
-    const item = items[id];
-    item.locations[location] = parseInt(value) || 0;
-    item.lastEdited = getCurrentDate();
-    
-    set(ref(database, `items/${id}`), item);
+window.updateQuantity = function (id, location, value) {
+  if (!isAdminMode) return;
+
+  const item = items[id];
+  item.locations[location] = parseInt(value) || 0;
+  item.lastEdited = getCurrentDate();
+
+  set(ref(database, `items/${id}`), item);
 };
 
 // Adjust quantity by increment (for +/- buttons)
-window.adjustQuantity = function(id, location, change) {
-    if (!isAdminMode) return;
-    
-    const item = items[id];
-    const currentQty = item.locations[location] || 0;
-    const newQty = Math.max(0, currentQty + change); // Don't go below 0
-    
-    item.locations[location] = newQty;
-    item.lastEdited = getCurrentDate();
-    
-    set(ref(database, `items/${id}`), item);
+window.adjustQuantity = function (id, location, change) {
+  if (!isAdminMode) return;
+
+  const item = items[id];
+  const currentQty = item.locations[location] || 0;
+  const newQty = Math.max(0, currentQty + change); // Don't go below 0
+
+  item.locations[location] = newQty;
+  item.lastEdited = getCurrentDate();
+
+  set(ref(database, `items/${id}`), item);
 };
 
 // Render all items
 function renderItems() {
-    const searchTerm = searchBar.value.toLowerCase();
-    const categoryFilterValue = categoryFilter.value;
-    
-    const filteredItems = Object.entries(items).filter(([id, item]) => {
-        const matchesSearch = item.name.toLowerCase().includes(searchTerm);
-        const matchesCategory = !categoryFilterValue || item.category === categoryFilterValue;
-        return matchesSearch && matchesCategory;
-    });
+  const searchTerm = searchBar.value.toLowerCase();
+  const categoryFilterValue = categoryFilter.value;
 
-    if (filteredItems.length === 0) {
-        itemGrid.innerHTML = `<div class="empty-state">No items found. ${
-            isAdminMode ? 'Click "Add Item" to create one.' : ''
-        }</div>`;
-        return;
-    }
+  const filteredItems = Object.entries(items).filter(([id, item]) => {
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm);
+    const matchesCategory =
+      !categoryFilterValue || item.category === categoryFilterValue;
+    return matchesSearch && matchesCategory;
+  });
 
-    itemGrid.innerHTML = filteredItems.map(([id, item]) => {
-        return createItemCard(id, item);
-    }).join('');
+  if (filteredItems.length === 0) {
+    itemGrid.innerHTML = `<div class="empty-state">No items found. ${
+      isAdminMode ? 'Click "Add Item" to create one.' : ""
+    }</div>`;
+    return;
+  }
+
+  itemGrid.innerHTML = filteredItems
+    .map(([id, item]) => {
+      return createItemCard(id, item);
+    })
+    .join("");
 }
 
 // Create HTML for a single item card
 function createItemCard(id, item) {
-    const total = calculateTotal(item.locations);
-    
-    return `
+  const total = calculateTotal(item.locations);
+
+  return `
         <div class="item-card">
             <div class="item-header">
                 <div class="item-name">${escapeHtml(item.name)}</div>
@@ -214,10 +241,14 @@ function createItemCard(id, item) {
             <div class="locations">
                 ${createLocationInputs(id, item.locations)}
             </div>
-            ${item.note ? `<div class="item-note">Note: ${escapeHtml(item.note)}</div>` : ''}
+            ${
+              item.note
+                ? `<div class="item-note">Note: ${escapeHtml(item.note)}</div>`
+                : ""
+            }
             <div class="item-footer">
                 <span>Last edited: ${item.lastEdited}</span>
-                ${isAdminMode ? createItemActions(id) : ''}
+                ${isAdminMode ? createItemActions(id) : ""}
             </div>
         </div>
     `;
@@ -225,30 +256,34 @@ function createItemCard(id, item) {
 
 // Create location quantity inputs with +/- buttons
 function createLocationInputs(id, locations) {
-    return Object.entries(locations).map(([location, qty]) => `
+  return Object.entries(locations)
+    .map(
+      ([location, qty]) => `
         <div class="location">
             <span class="location-name">${location}</span>
             <div class="quantity-control">
                 <button 
                     class="quantity-btn" 
                     onclick="adjustQuantity('${id}', '${location}', -1)"
-                    ${!isAdminMode ? 'disabled' : ''}
-                    ${qty <= 0 ? 'disabled' : ''}
+                    ${!isAdminMode ? "disabled" : ""}
+                    ${qty <= 0 ? "disabled" : ""}
                 >−</button>
                 <span class="quantity-display">${qty}</span>
                 <button 
                     class="quantity-btn" 
                     onclick="adjustQuantity('${id}', '${location}', 1)"
-                    ${!isAdminMode ? 'disabled' : ''}
+                    ${!isAdminMode ? "disabled" : ""}
                 >+</button>
             </div>
         </div>
-    `).join('');
+    `
+    )
+    .join("");
 }
 
 // Create action buttons for admin mode
 function createItemActions(id) {
-    return `
+  return `
         <div class="item-actions">
             <button onclick="editItem('${id}')">Edit</button>
             <button class="delete-btn" onclick="deleteItem('${id}')">Delete</button>
@@ -259,17 +294,17 @@ function createItemActions(id) {
 // Helper Functions
 
 function calculateTotal(locations) {
-    return Object.values(locations).reduce((sum, qty) => sum + qty, 0);
+  return Object.values(locations).reduce((sum, qty) => sum + qty, 0);
 }
 
 function getCurrentDate() {
-    return new Date().toISOString().split('T')[0];
+  return new Date().toISOString().split("T")[0];
 }
 
 function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 // Initialize the app when DOM is ready
