@@ -205,14 +205,14 @@ window.adjustQuantity = function (id, location, change) {
 function renderItems() {
   const searchTerm = searchBar.value.toLowerCase();
   const categoryFilterValue = categoryFilter.value;
-  const sortValue = sortFilter.value;
+  // const sortValue = sortFilter.value;
 
-  // let filteredItems = Object.entries(items).filter(([id, item]) => {
-  //   const matchesSearch = item.name.toLowerCase().includes(searchTerm);
-  //   const matchesCategory =
-  //     !categoryFilterValue || item.category === categoryFilterValue;
-  //   return matchesSearch && matchesCategory;
-  // });
+  let filteredItems = Object.entries(items).filter(([id, item]) => {
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm);
+    const matchesCategory =
+      !categoryFilterValue || item.category === categoryFilterValue;
+    return matchesSearch && matchesCategory;
+  });
 
   // // Sort items based on selected option
   // filteredItems.sort(([idA, itemA], [idB, itemB]) => {
