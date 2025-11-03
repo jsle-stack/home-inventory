@@ -72,7 +72,7 @@ function setupEventListeners() {
   addItemBtn.addEventListener("click", openAddItemModal);
   searchBar.addEventListener("input", renderItems);
   categoryFilter.addEventListener("change", renderItems);
-  sortFilter.addEventListener("change", renderItems);
+  // sortFilter.addEventListener("change", renderItems);
   itemForm.addEventListener("submit", saveItem);
   itemModal.addEventListener("click", (e) => {
     if (e.target.id === "itemModal") closeModal();
