@@ -37,7 +37,7 @@ let editingItemId = null;
 // DOM Elements
 const searchBar = document.getElementById("searchBar");
 const categoryFilter = document.getElementById("categoryFilter");
-const sortFilter = document.getElementById("sortFilter");
+// const sortFilter = document.getElementById("sortFilter");
 const adminToggle = document.getElementById("adminToggle");
 const addItemBtn = document.getElementById("addItemBtn");
 const itemGrid = document.getElementById("itemGrid");
@@ -207,34 +207,34 @@ function renderItems() {
   const categoryFilterValue = categoryFilter.value;
   const sortValue = sortFilter.value;
 
-  let filteredItems = Object.entries(items).filter(([id, item]) => {
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm);
-    const matchesCategory =
-      !categoryFilterValue || item.category === categoryFilterValue;
-    return matchesSearch && matchesCategory;
-  });
+  // let filteredItems = Object.entries(items).filter(([id, item]) => {
+  //   const matchesSearch = item.name.toLowerCase().includes(searchTerm);
+  //   const matchesCategory =
+  //     !categoryFilterValue || item.category === categoryFilterValue;
+  //   return matchesSearch && matchesCategory;
+  // });
 
-  // Sort items based on selected option
-  filteredItems.sort(([idA, itemA], [idB, itemB]) => {
-    switch (sortValue) {
-      case "date-desc":
-        // Most recent first
-        return (itemB.lastEdited || "").localeCompare(itemA.lastEdited || "");
-      case "date-asc":
-        // Oldest first
-        return (itemA.lastEdited || "").localeCompare(itemB.lastEdited || "");
-      case "qty-desc":
-        return (
-          calculateTotal(itemB.locations) - calculateTotal(itemA.locations)
-        );
-      case "qty-asc":
-        return (
-          calculateTotal(itemA.locations) - calculateTotal(itemB.locations)
-        );
-      default:
-        return 0;
-    }
-  });
+  // // Sort items based on selected option
+  // filteredItems.sort(([idA, itemA], [idB, itemB]) => {
+  //   switch (sortValue) {
+  //     case "date-desc":
+  //       // Most recent first
+  //       return (itemB.lastEdited || "").localeCompare(itemA.lastEdited || "");
+  //     case "date-asc":
+  //       // Oldest first
+  //       return (itemA.lastEdited || "").localeCompare(itemB.lastEdited || "");
+  //     case "qty-desc":
+  //       return (
+  //         calculateTotal(itemB.locations) - calculateTotal(itemA.locations)
+  //       );
+  //     case "qty-asc":
+  //       return (
+  //         calculateTotal(itemA.locations) - calculateTotal(itemB.locations)
+  //       );
+  //     default:
+  //       return 0;
+  //   }
+  // });
 
   if (filteredItems.length === 0) {
     itemGrid.innerHTML = `<div class="empty-state">No items found. ${
